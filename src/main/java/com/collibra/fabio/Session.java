@@ -37,27 +37,32 @@ public class Session {
 	}
 
 	/**
-	 * Checks if the current object is still alive (not timed out)
+	 * Checks if the current object is still alive (not timed out) killing the
+	 * session if it is not alive
 	 * 
 	 * @return
 	 */
 	public Boolean checkAlive() {
-		Boolean isAlive = lastActiveTime + timeout > System.currentTimeMillis();
+		Boolean isAlive = isAlive();
 		if (!isAlive) {
 			this.killSession();
 		}
 		return isAlive;
 	}
 
+	/**
+	 * Checks last activity time for the current session and returns a boolean
+	 * value whether the session is alive/active or not
+	 * 
+	 * @return
+	 */
+	public Boolean isAlive() {
+		return lastActiveTime + timeout > System.currentTimeMillis();
+	}
+
 	private void killSession() {
 		this.currentState = Event.GOODBYE.dispatch(currentState);
 		this.currentMessage = this.currentState.getMessage(this.name, (System.currentTimeMillis() - this.initialTime));
-		// TODO: Check if it's necessary to do something to really kill the
-		// session.
-		// this.uuid = UUID.randomUUID();
-		// this.initialTime = System.currentTimeMillis();
-		// this.lastActiveTime = this.initialTime;
-		// this.currentState = State.WAITING_TO_START;
 
 	}
 

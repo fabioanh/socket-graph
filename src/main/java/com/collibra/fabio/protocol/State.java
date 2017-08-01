@@ -1,5 +1,12 @@
 package com.collibra.fabio.protocol;
 
+/**
+ * 
+ * @author fabio
+ *
+ *         Inspired by:
+ *         https://stackoverflow.com/questions/25581176/java-enum-based-state-machine-fsm-passing-in-events
+ */
 public enum State {
 	FINISHING("BYE %s, WE SPOKE FOR %d MS"), GREETED("HI %s"),
 
