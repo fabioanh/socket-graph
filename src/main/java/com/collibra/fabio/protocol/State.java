@@ -20,6 +20,8 @@ public enum State {
 
 	ITEM_REMOVED("%s REMOVED"),
 
+	VALUE_COMPUTED("%s"),
+
 	WAITING_TO_START("HI, I'M %s") {
 		@Override
 		public State processInitialGreeting() {
@@ -55,6 +57,13 @@ public enum State {
 	public State processItemRemoved(Boolean success) {
 		if (success) {
 			return State.ITEM_REMOVED;
+		}
+		return State.ITEM_NOT_FOUND;
+	}
+
+	public State processCalculation(Boolean success) {
+		if (success) {
+			return State.VALUE_COMPUTED;
 		}
 		return State.ITEM_NOT_FOUND;
 	}

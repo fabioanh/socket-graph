@@ -9,15 +9,21 @@ import com.collibra.fabio.protocol.Event;
 import com.collibra.fabio.protocol.State;
 
 public class Session {
+
 	private static final String NAME_SEQUENCE = "[a-zA-Z0-9-]*";
-	private static final Pattern HI_PATTERN = Pattern.compile("HI, I'M (" + NAME_SEQUENCE + ")");
-	private static final Pattern BYE_PATTERN = Pattern.compile("BYE MATE!");
-	private static final Pattern ADD_NODE_PATTERN = Pattern.compile("ADD NODE (" + NAME_SEQUENCE + ")");
-	private static final Pattern REMOVE_NODE_PATTERN = Pattern.compile("REMOVE NODE (" + NAME_SEQUENCE + ")");
+
 	private static final Pattern ADD_EDGE_PATTERN = Pattern
 			.compile("ADD EDGE (" + NAME_SEQUENCE + ") (" + NAME_SEQUENCE + ") ([0-9]*)");
+	private static final Pattern ADD_NODE_PATTERN = Pattern.compile("ADD NODE (" + NAME_SEQUENCE + ")");
+	private static final Pattern BYE_PATTERN = Pattern.compile("BYE MATE!");
+	private static final Pattern CLOSER_THAN_PATTERN = Pattern.compile("CLOSER THAN ([0-9]*) (" + NAME_SEQUENCE + ")");
+	private static final Pattern HI_PATTERN = Pattern.compile("HI, I'M (" + NAME_SEQUENCE + ")");
 	private static final Pattern REMOVE_EDGE_PATTERN = Pattern
 			.compile("REMOVE EDGE (" + NAME_SEQUENCE + ") (" + NAME_SEQUENCE + ")");
+	private static final Pattern REMOVE_NODE_PATTERN = Pattern.compile("REMOVE NODE (" + NAME_SEQUENCE + ")");
+	private static final Pattern SHORTEST_PATH_PATTERN = Pattern
+			.compile("SHORTEST PATH (" + NAME_SEQUENCE + ") (" + NAME_SEQUENCE + ")");
+
 	private final UUID uuid;
 
 	// Timeout in milliseconds
@@ -150,6 +156,35 @@ public class Session {
 									this.currentMessage = this.currentState.getMessage("EDGE");
 								} else {
 									this.currentMessage = this.currentState.getMessage("NODE");
+								}
+							} else {
+								matcher = SHORTEST_PATH_PATTERN.matcher(input);
+								if (matcher.matches()) {
+									recognizedInput = true;
+									String originNode = matcher.group(1);
+									String destinyNode = matcher.group(2);
+									Integer weight = graph.shortestPath(originNode, destinyNode);
+									this.currentState = Event.COMPUTE_VALUE.dispatch(this.currentState, weight != null);
+									if (weight != null) {
+										this.currentMessage = this.currentState.getMessage(weight);
+									} else {
+										this.currentMessage = this.currentState.getMessage("NODE");
+									}
+								} else {
+									matcher = CLOSER_THAN_PATTERN.matcher(input);
+									if (matcher.matches()) {
+										recognizedInput = true;
+										Integer weight = Integer.valueOf(matcher.group(1));
+										String node = matcher.group(2);
+										String sequence = graph.closerThan(weight, node);
+										this.currentState = Event.COMPUTE_VALUE.dispatch(this.currentState,
+												sequence != null);
+										if (sequence != null) {
+											this.currentMessage = this.currentState.getMessage(sequence);
+										} else {
+											this.currentMessage = this.currentState.getMessage("NODE");
+										}
+									}
 								}
 							}
 						}

@@ -1,34 +1,14 @@
 package com.collibra.fabio.graph;
 
-import java.util.Comparator;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+public class Node {
 
-public class Node implements Comparator<Node> {
-
-	private Set<Edge> edges;
 	private String name;
 
 	public Node() {
-		edges = ConcurrentHashMap.newKeySet();
 	}
 
 	public Node(String name) {
-		edges = ConcurrentHashMap.newKeySet();
 		this.name = name;
-	}
-
-	public void addEdge(Node node, Integer weight) {
-		this.edges.add(new Edge(node, weight));
-	}
-
-	public void removeEdge(Node node) {
-		edges.remove(node);
-	}
-
-	@Override
-	public int compare(Node o1, Node o2) {
-		return Integer.valueOf(o2.edges.size()).compareTo(o1.edges.size());
 	}
 
 	@Override
