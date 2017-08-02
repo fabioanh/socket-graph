@@ -28,20 +28,20 @@ public class Graph {
 		return false;
 	}
 
-	public void addEdge(Node origin, Node destiny, Integer weight) {
-		this.edges.add(new Edge(origin, destiny, weight));
+	public void addEdge(Node origin, Node destination, Integer weight) {
+		this.edges.add(new Edge(origin, destination, weight));
 	}
 
 	public Boolean removeEdge(String nodeA, String nodeB) {
 		Node origin = nodes.get(nodeA);
-		Node destiny = nodes.get(nodeB);
-		if (origin == null || destiny == null) {
+		Node destination = nodes.get(nodeB);
+		if (origin == null || destination == null) {
 			return false;
 		}
 		Iterator<Edge> edgeIter = edges.iterator();
 		while (edgeIter.hasNext()) {
 			Edge edge = edgeIter.next();
-			if (edge.getOrigin().equals(origin) && edge.getDestiny().equals(destiny)) {
+			if (edge.getOrigin().equals(origin) && edge.getDestination().equals(destination)) {
 				edgeIter.remove();
 			}
 		}
@@ -50,11 +50,11 @@ public class Graph {
 
 	public Boolean addEdge(String nodeA, String nodeB, Integer weight) {
 		Node origin = nodes.get(nodeA);
-		Node destiny = nodes.get(nodeB);
-		if (origin == null || destiny == null) {
+		Node destination = nodes.get(nodeB);
+		if (origin == null || destination == null) {
 			return false;
 		}
-		addEdge(origin, destiny, weight);
+		addEdge(origin, destination, weight);
 		return true;
 	}
 
@@ -62,18 +62,18 @@ public class Graph {
 		Iterator<Edge> edgeIter = edges.iterator();
 		while (edgeIter.hasNext()) {
 			Edge edge = edgeIter.next();
-			if (edge.getOrigin().equals(node) || edge.getDestiny().equals(node)) {
+			if (edge.getOrigin().equals(node) || edge.getDestination().equals(node)) {
 				edgeIter.remove();
 			}
 		}
 	}
 
-	public Integer shortestPath(String originNode, String destinyNode) {
+	public Integer shortestPath(String originNode, String destinationNode) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public String closerThan(Integer weight, String destinyNode) {
+	public String closerThan(Integer weight, String node) {
 		// TODO Auto-generated method stub
 		return null;
 	}

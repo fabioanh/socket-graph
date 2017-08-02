@@ -2,12 +2,12 @@ package com.collibra.fabio.graph;
 
 public class Edge {
 	private Node origin;
-	private Node destiny;
+	private Node destination;
 	private Integer weight;
 
-	public Edge(Node origin, Node destiny, Integer weight) {
+	public Edge(Node origin, Node destination, Integer weight) {
 		this.origin = origin;
-		this.destiny = destiny;
+		this.destination = destination;
 		this.weight = weight;
 	}
 
@@ -15,7 +15,7 @@ public class Edge {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((destiny == null) ? 0 : destiny.hashCode());
+		result = prime * result + ((destination == null) ? 0 : destination.hashCode());
 		result = prime * result + ((origin == null) ? 0 : origin.hashCode());
 		result = prime * result + ((weight == null) ? 0 : weight.hashCode());
 		return result;
@@ -25,8 +25,8 @@ public class Edge {
 		return origin;
 	}
 
-	public Node getDestiny() {
-		return destiny;
+	public Node getDestination() {
+		return destination;
 	}
 
 	public Integer getWeight() {
@@ -42,10 +42,10 @@ public class Edge {
 		if (getClass() != obj.getClass())
 			return false;
 		Edge other = (Edge) obj;
-		if (destiny == null) {
-			if (other.destiny != null)
+		if (destination == null) {
+			if (other.destination != null)
 				return false;
-		} else if (!destiny.equals(other.destiny))
+		} else if (!destination.equals(other.destination))
 			return false;
 		if (origin == null) {
 			if (other.origin != null)

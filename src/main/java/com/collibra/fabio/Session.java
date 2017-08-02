@@ -135,9 +135,9 @@ public class Session {
 						if (matcher.matches()) {
 							recognizedInput = true;
 							String originNode = matcher.group(1);
-							String destinyNode = matcher.group(2);
+							String destinationNode = matcher.group(2);
 							Integer weight = Integer.valueOf(matcher.group(3));
-							Boolean successful = graph.addEdge(originNode, destinyNode, weight);
+							Boolean successful = graph.addEdge(originNode, destinationNode, weight);
 							this.currentState = Event.ADD_ITEM.dispatch(this.currentState, successful, false);
 							if (successful) {
 								this.currentMessage = this.currentState.getMessage("EDGE");
@@ -149,8 +149,8 @@ public class Session {
 							if (matcher.matches()) {
 								recognizedInput = true;
 								String originNode = matcher.group(1);
-								String destinyNode = matcher.group(2);
-								Boolean successful = graph.removeEdge(originNode, destinyNode);
+								String destinationNode = matcher.group(2);
+								Boolean successful = graph.removeEdge(originNode, destinationNode);
 								this.currentState = Event.REMOVE_ITEM.dispatch(this.currentState, successful);
 								if (successful) {
 									this.currentMessage = this.currentState.getMessage("EDGE");
@@ -162,8 +162,8 @@ public class Session {
 								if (matcher.matches()) {
 									recognizedInput = true;
 									String originNode = matcher.group(1);
-									String destinyNode = matcher.group(2);
-									Integer weight = graph.shortestPath(originNode, destinyNode);
+									String destinationNode = matcher.group(2);
+									Integer weight = graph.shortestPath(originNode, destinationNode);
 									this.currentState = Event.COMPUTE_VALUE.dispatch(this.currentState, weight != null);
 									if (weight != null) {
 										this.currentMessage = this.currentState.getMessage(weight);
