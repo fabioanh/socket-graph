@@ -4,13 +4,20 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.collibra.fabio.graph.Graph;
 import com.collibra.fabio.protocol.Event;
 import com.collibra.fabio.protocol.State;
 
 public class Session {
-
-	private static final Pattern HI_PATTERN = Pattern.compile("HI, I'M ([a-zA-Z0-9 -]*)");
+	private static final String NAME_SEQUENCE = "[a-zA-Z0-9-]*";
+	private static final Pattern HI_PATTERN = Pattern.compile("HI, I'M (" + NAME_SEQUENCE + ")");
 	private static final Pattern BYE_PATTERN = Pattern.compile("BYE MATE!");
+	private static final Pattern ADD_NODE_PATTERN = Pattern.compile("ADD NODE (" + NAME_SEQUENCE + ")");
+	private static final Pattern REMOVE_NODE_PATTERN = Pattern.compile("REMOVE NODE (" + NAME_SEQUENCE + ")");
+	private static final Pattern ADD_EDGE_PATTERN = Pattern
+			.compile("ADD EDGE (" + NAME_SEQUENCE + ") (" + NAME_SEQUENCE + ") ([0-9]*)");
+	private static final Pattern REMOVE_EDGE_PATTERN = Pattern
+			.compile("REMOVE EDGE (" + NAME_SEQUENCE + ") (" + NAME_SEQUENCE + ")");
 	private final UUID uuid;
 
 	// Timeout in milliseconds
@@ -26,11 +33,14 @@ public class Session {
 
 	private State currentState;
 
-	public Session() {
+	private Graph graph;
+
+	public Session(Graph graph) {
 		this.uuid = UUID.randomUUID();
 		this.initialTime = System.currentTimeMillis();
 		this.lastActiveTime = this.initialTime;
 		this.currentState = State.WAITING_TO_START;
+		this.graph = graph;
 	}
 
 	public void disconnect() {
@@ -90,17 +100,67 @@ public class Session {
 			recognizedInput = true;
 			this.killSession();
 		} else {
-
+			Matcher matcher;
 			switch (currentState) {
 			case FINISHING:
 				break;
+			case ITEM_ADDED:
+			case ITEM_REMOVED:
 			case GREETED:
+				matcher = ADD_NODE_PATTERN.matcher(input);
+				if (matcher.matches()) {
+					recognizedInput = true;
+					String nodeName = matcher.group(1);
+					Boolean successful = graph.addNode(nodeName);
+					this.currentState = Event.ADD_ITEM.dispatch(this.currentState, successful);
+					this.currentMessage = this.currentState.getMessage("NODE");
+				} else {
+					matcher = REMOVE_NODE_PATTERN.matcher(input);
+					if (matcher.matches()) {
+						recognizedInput = true;
+						String nodeName = matcher.group(1);
+						Boolean successful = graph.removeNode(nodeName);
+						this.currentState = Event.REMOVE_ITEM.dispatch(this.currentState, successful);
+						this.currentMessage = this.currentState.getMessage("NODE");
+					} else {
+						matcher = ADD_EDGE_PATTERN.matcher(input);
+						if (matcher.matches()) {
+							recognizedInput = true;
+							String originNode = matcher.group(1);
+							String destinyNode = matcher.group(2);
+							Integer weight = Integer.valueOf(matcher.group(3));
+							Boolean successful = graph.addEdge(originNode, destinyNode, weight);
+							this.currentState = Event.ADD_ITEM.dispatch(this.currentState, successful);
+							if (successful) {
+								this.currentMessage = this.currentState.getMessage("EDGE");
+							} else {
+								this.currentMessage = this.currentState.getMessage("NODE");
+							}
+						} else {
+							matcher = REMOVE_EDGE_PATTERN.matcher(input);
+							if (matcher.matches()) {
+								recognizedInput = true;
+								String originNode = matcher.group(1);
+								String destinyNode = matcher.group(2);
+								Integer weight = Integer.valueOf(matcher.group(3));
+								Boolean successful = graph.removeEdge(originNode, destinyNode);
+								this.currentState = Event.REMOVE_ITEM.dispatch(this.currentState, successful);
+								if (successful) {
+									this.currentMessage = this.currentState.getMessage("EDGE");
+								} else {
+									this.currentMessage = this.currentState.getMessage("NODE");
+								}
+							}
+						}
+					}
+
+				}
 				break;
 			case WAITING_TO_START:
-				Matcher m = HI_PATTERN.matcher(input);
-				if (m.matches()) {
+				matcher = HI_PATTERN.matcher(input);
+				if (matcher.matches()) {
 					recognizedInput = true;
-					this.name = m.group(1);
+					this.name = matcher.group(1);
 					this.currentState = Event.INITIAL_GREETING.dispatch(this.currentState);
 					this.currentMessage = this.currentState.getMessage(name);
 				}

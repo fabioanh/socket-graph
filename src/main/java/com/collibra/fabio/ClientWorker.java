@@ -9,13 +9,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.collibra.fabio.graph.Graph;
+
 public class ClientWorker implements Runnable {
 
 	private Socket clientSocket;
 	private Session session;
+	private Graph graph;
 
-	public ClientWorker(Socket clientSocket) {
+	public ClientWorker(Socket clientSocket, Graph graph) {
 		this.clientSocket = clientSocket;
+		this.graph = graph;
 	}
 
 	@Override
@@ -26,7 +30,7 @@ public class ClientWorker implements Runnable {
 
 			String inputLine, outputLine;
 
-			session = new Session();
+			session = new Session(graph);
 			out.println(session.getHiMessage());
 
 			this.startSessionChecker(out);
