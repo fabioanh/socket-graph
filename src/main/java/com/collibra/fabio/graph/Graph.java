@@ -69,13 +69,28 @@ public class Graph {
 	}
 
 	public Integer shortestPath(String originNode, String destinationNode) {
-		// TODO Auto-generated method stub
-		return null;
+		Node origin = nodes.get(originNode);
+		Node destination = nodes.get(destinationNode);
+		if (origin == null || destination == null) {
+			return null;
+		}
+		DijkstraAlgorithm shortestPathAlgorithm = new DijkstraAlgorithm(this);
+		shortestPathAlgorithm.execute(origin);
+		return shortestPathAlgorithm.getShortestDistance(destination);
+
 	}
 
 	public String closerThan(Integer weight, String node) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public ConcurrentMap<String, Node> getNodes() {
+		return nodes;
+	}
+
+	public Set<Edge> getEdges() {
+		return edges;
 	}
 
 }

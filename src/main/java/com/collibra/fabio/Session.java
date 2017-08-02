@@ -114,6 +114,7 @@ public class Session {
 			case ITEM_ALREADY_FOUND:
 			case ITEM_NOT_FOUND:
 			case ITEM_REMOVED:
+			case VALUE_COMPUTED:
 			case GREETED:
 				matcher = ADD_NODE_PATTERN.matcher(input);
 				if (matcher.matches()) {
