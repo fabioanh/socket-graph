@@ -16,7 +16,7 @@ public enum State {
 
 	ITEM_ALREADY_FOUND("ERROR: %s ALREADY EXISTS"),
 
-	ITEM_NOT_FOUND("%s NOT FOUND"),
+	ITEM_NOT_FOUND("ERROR: %s NOT FOUND"),
 
 	ITEM_REMOVED("%s REMOVED"),
 
@@ -41,11 +41,15 @@ public enum State {
 		return State.FINISHING;
 	}
 
-	public State processItemAdded(Boolean success) {
+	public State processItemAdded(Boolean success, Boolean isNode) {
 		if (success) {
 			return State.ITEM_ADDED;
 		}
-		return State.ITEM_ALREADY_FOUND;
+		if (isNode) {
+			return State.ITEM_ALREADY_FOUND;
+		} else {
+			return State.ITEM_NOT_FOUND;
+		}
 	}
 
 	public State processItemRemoved(Boolean success) {

@@ -105,6 +105,8 @@ public class Session {
 			case FINISHING:
 				break;
 			case ITEM_ADDED:
+			case ITEM_ALREADY_FOUND:
+			case ITEM_NOT_FOUND:
 			case ITEM_REMOVED:
 			case GREETED:
 				matcher = ADD_NODE_PATTERN.matcher(input);
@@ -112,7 +114,7 @@ public class Session {
 					recognizedInput = true;
 					String nodeName = matcher.group(1);
 					Boolean successful = graph.addNode(nodeName);
-					this.currentState = Event.ADD_ITEM.dispatch(this.currentState, successful);
+					this.currentState = Event.ADD_ITEM.dispatch(this.currentState, successful, true);
 					this.currentMessage = this.currentState.getMessage("NODE");
 				} else {
 					matcher = REMOVE_NODE_PATTERN.matcher(input);
@@ -130,7 +132,7 @@ public class Session {
 							String destinyNode = matcher.group(2);
 							Integer weight = Integer.valueOf(matcher.group(3));
 							Boolean successful = graph.addEdge(originNode, destinyNode, weight);
-							this.currentState = Event.ADD_ITEM.dispatch(this.currentState, successful);
+							this.currentState = Event.ADD_ITEM.dispatch(this.currentState, successful, false);
 							if (successful) {
 								this.currentMessage = this.currentState.getMessage("EDGE");
 							} else {
@@ -142,7 +144,6 @@ public class Session {
 								recognizedInput = true;
 								String originNode = matcher.group(1);
 								String destinyNode = matcher.group(2);
-								Integer weight = Integer.valueOf(matcher.group(3));
 								Boolean successful = graph.removeEdge(originNode, destinyNode);
 								this.currentState = Event.REMOVE_ITEM.dispatch(this.currentState, successful);
 								if (successful) {
@@ -164,6 +165,8 @@ public class Session {
 					this.currentState = Event.INITIAL_GREETING.dispatch(this.currentState);
 					this.currentMessage = this.currentState.getMessage(name);
 				}
+				break;
+			default:
 				break;
 			}
 		}

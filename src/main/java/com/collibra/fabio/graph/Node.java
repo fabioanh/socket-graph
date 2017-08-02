@@ -14,6 +14,7 @@ public class Node implements Comparator<Node> {
 	}
 
 	public Node(String name) {
+		edges = ConcurrentHashMap.newKeySet();
 		this.name = name;
 	}
 

@@ -23,7 +23,7 @@ public enum Event {
 	ADD_ITEM {
 		@Override
 		public State dispatch(State state, Object... params) {
-			return state.processItemAdded((Boolean) params[0]);
+			return state.processItemAdded((Boolean) params[0], (Boolean) params[1]);
 		}
 	},
 	REMOVE_ITEM {
