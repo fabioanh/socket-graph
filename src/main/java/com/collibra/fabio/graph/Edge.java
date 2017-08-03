@@ -33,6 +33,10 @@ public class Edge {
 		return weight;
 	}
 
+	public void setWeight(Integer weight) {
+		this.weight = weight;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -62,6 +62,7 @@ public class Session {
 		Boolean isAlive = isAlive();
 		if (!isAlive) {
 			this.killSession();
+			return isAlive;
 		}
 		return isAlive;
 	}

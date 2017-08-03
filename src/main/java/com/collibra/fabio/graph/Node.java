@@ -11,6 +11,10 @@ public class Node {
 		this.name = name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

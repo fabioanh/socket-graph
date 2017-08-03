@@ -78,22 +78,22 @@ public class DijkstraAlgorithm {
 		return neighbors;
 	}
 
-	private Node getMinimum(Set<Node> vertexes) {
+	private Node getMinimum(Set<Node> nodes) {
 		Node minimum = null;
-		for (Node vertex : vertexes) {
+		for (Node node : nodes) {
 			if (minimum == null) {
-				minimum = vertex;
+				minimum = node;
 			} else {
-				if (getShortestDistance(vertex) < getShortestDistance(minimum)) {
-					minimum = vertex;
+				if (getShortestDistance(node) < getShortestDistance(minimum)) {
+					minimum = node;
 				}
 			}
 		}
 		return minimum;
 	}
 
-	private boolean isSettled(Node vertex) {
-		return settledNodes.contains(vertex);
+	private boolean isSettled(Node node) {
+		return settledNodes.contains(node);
 	}
 
 	public int getShortestDistance(Node destination) {
