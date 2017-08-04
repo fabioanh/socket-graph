@@ -163,8 +163,8 @@ public class Session {
 					this.currentMessage = this.currentState.getMessage("NODE");
 				} else {
 					matcher = REMOVE_NODE_PATTERN.matcher(input);
-					LOGGER.info("Processing Node Removal Request");
 					if (matcher.matches()) {
+						LOGGER.info("Processing Node Removal Request");
 						recognizedInput = true;
 						String nodeName = matcher.group(1);
 						Boolean successful = graph.removeNode(nodeName);
@@ -172,8 +172,8 @@ public class Session {
 						this.currentMessage = this.currentState.getMessage("NODE");
 					} else {
 						matcher = ADD_EDGE_PATTERN.matcher(input);
-						LOGGER.info("Processing Add Edge Request");
 						if (matcher.matches()) {
+							LOGGER.info("Processing Add Edge Request");
 							recognizedInput = true;
 							String originNode = matcher.group(1);
 							String destinationNode = matcher.group(2);
@@ -186,9 +186,9 @@ public class Session {
 								this.currentMessage = this.currentState.getMessage("NODE");
 							}
 						} else {
-							LOGGER.info("Processing Edge Removal Request");
 							matcher = REMOVE_EDGE_PATTERN.matcher(input);
 							if (matcher.matches()) {
+								LOGGER.info("Processing Edge Removal Request");
 								recognizedInput = true;
 								String originNode = matcher.group(1);
 								String destinationNode = matcher.group(2);
@@ -201,8 +201,8 @@ public class Session {
 								}
 							} else {
 								matcher = SHORTEST_PATH_PATTERN.matcher(input);
-								LOGGER.info("Processing Shortest Path Request");
 								if (matcher.matches()) {
+									LOGGER.info("Processing Shortest Path Request");
 									recognizedInput = true;
 									String originNode = matcher.group(1);
 									String destinationNode = matcher.group(2);
@@ -214,9 +214,9 @@ public class Session {
 										this.currentMessage = this.currentState.getMessage("NODE");
 									}
 								} else {
-									LOGGER.info("Processing Closer Than Request");
 									matcher = CLOSER_THAN_PATTERN.matcher(input);
 									if (matcher.matches()) {
+										LOGGER.info("Processing Closer Than Request");
 										recognizedInput = true;
 										Integer weight = Integer.valueOf(matcher.group(1));
 										String node = matcher.group(2);
