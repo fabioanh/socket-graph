@@ -1,5 +1,13 @@
 package com.collibra.fabio.graph;
 
+/**
+ * Representation for an edge on a graph. Contains the {@link Node} information
+ * for origin and destination to keep the edge directed. Contains also the
+ * weight information.
+ * 
+ * @author fabio
+ *
+ */
 public class Edge {
 	private Node origin;
 	private Node destination;
@@ -11,15 +19,7 @@ public class Edge {
 		this.weight = weight;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((destination == null) ? 0 : destination.hashCode());
-		result = prime * result + ((origin == null) ? 0 : origin.hashCode());
-		result = prime * result + ((weight == null) ? 0 : weight.hashCode());
-		return result;
-	}
+	// --- GETTERS AND SETTERS ---
 
 	public Node getOrigin() {
 		return origin;
@@ -35,6 +35,18 @@ public class Edge {
 
 	public void setWeight(Integer weight) {
 		this.weight = weight;
+	}
+
+	// --- HASH CODE & EQUALS ---
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((destination == null) ? 0 : destination.hashCode());
+		result = prime * result + ((origin == null) ? 0 : origin.hashCode());
+		result = prime * result + ((weight == null) ? 0 : weight.hashCode());
+		return result;
 	}
 
 	@Override

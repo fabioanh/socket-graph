@@ -1,6 +1,7 @@
 package com.collibra.fabio.protocol;
 
 /**
+ * Set of possible events handled by the application based on the {@link State}s
  * 
  * @author fabio
  * 

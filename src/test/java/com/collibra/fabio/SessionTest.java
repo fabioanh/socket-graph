@@ -6,6 +6,11 @@ import org.junit.Test;
 import com.collibra.fabio.graph.Graph;
 import com.collibra.fabio.protocol.State;
 
+/**
+ * Class created to quickly check some functionalities of the {@link Session} class.
+ * @author fabio
+ *
+ */
 public class SessionTest {
 
 	@Test

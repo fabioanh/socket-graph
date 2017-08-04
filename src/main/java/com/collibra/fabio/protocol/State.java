@@ -1,6 +1,8 @@
 package com.collibra.fabio.protocol;
 
 /**
+ * Set of States used by the application to know what are the current messages
+ * to show and what are the possible actions that can be performed.
  * 
  * @author fabio
  *

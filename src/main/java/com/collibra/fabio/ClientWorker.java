@@ -9,9 +9,21 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.collibra.fabio.graph.Graph;
 
+/**
+ * Intended to run as a thread by the server to listen to the communication of
+ * each client connected to the server
+ * 
+ * @author fabio
+ *
+ */
 public class ClientWorker implements Runnable {
+
+	private static final Logger LOGGER = LogManager.getLogger(ClientWorker.class);
 
 	private Socket clientSocket;
 	private Session session;
@@ -22,6 +34,9 @@ public class ClientWorker implements Runnable {
 		this.graph = graph;
 	}
 
+	/**
+	 * Handles the in/out communication with the client
+	 */
 	@Override
 	public void run() {
 
@@ -36,18 +51,18 @@ public class ClientWorker implements Runnable {
 			this.startSessionChecker(out);
 
 			while ((inputLine = in.readLine()) != null) {
-				System.out.println("Client: " + inputLine);
+				LOGGER.debug("Client: " + inputLine);
 				session.processInput(inputLine);
 				outputLine = session.getCurrentMessage();
-				System.out.println("Server: " + outputLine);
+				LOGGER.debug("Server: " + outputLine);
 				out.println(outputLine);
 				if (!session.isAlive()) {
-					break;
+					return;
 				}
 			}
 
 		} catch (IOException e) {
-			System.out.println(e);
+			LOGGER.error("Error reading input from client", e);
 		}
 	}
 
@@ -55,15 +70,22 @@ public class ClientWorker implements Runnable {
 	 * Starts the thread that will take care of killing timed-out sessions
 	 */
 	private void startSessionChecker(PrintWriter out) {
-		System.out.println("Starting session checker ...");
+		LOGGER.trace("Starting session checker ...");
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		Runnable task = () -> checkAliveSession(out);
 		scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 	}
 
+	/**
+	 * Run by the session expired thread. Checks if the session is still alive
+	 * if not ends the session-alive-checker thread and marks the session as
+	 * finalised
+	 * 
+	 * @param out
+	 */
 	private void checkAliveSession(PrintWriter out) {
 		if (!session.checkAlive()) {
-			System.out.println("Session is not alive");
+			LOGGER.debug("Session expired.");
 			out.println(session.getCurrentMessage());
 			throw new RuntimeException();
 		}

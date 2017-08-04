@@ -1,5 +1,11 @@
 package com.collibra.fabio.graph;
 
+/**
+ * Representation of a Node. Contains the name/id of the object
+ * 
+ * @author fabio
+ *
+ */
 public class Node {
 
 	private String name;
@@ -11,9 +17,13 @@ public class Node {
 		this.name = name;
 	}
 
+	// --- GETTERS AND SETTERS ---
+
 	public String getName() {
 		return name;
 	}
+
+	// --- HASH CODE & EQUALS ---
 
 	@Override
 	public int hashCode() {

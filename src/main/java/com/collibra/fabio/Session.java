@@ -4,12 +4,22 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.collibra.fabio.graph.Graph;
 import com.collibra.fabio.protocol.Event;
 import com.collibra.fabio.protocol.State;
 
+/**
+ * Class containing all the logic for session conversations with the clients and
+ * mapping/decision making for the input provided by the clients
+ * 
+ * @author fabio
+ *
+ */
 public class Session {
-
+	private static final Logger LOGGER = LogManager.getLogger(Session.class);
 	private static final String NAME_SEQUENCE = "[a-zA-Z0-9-]*";
 
 	private static final Pattern ADD_EDGE_PATTERN = Pattern
@@ -77,33 +87,56 @@ public class Session {
 		return lastActiveTime + timeout > System.currentTimeMillis();
 	}
 
+	/**
+	 * Logic related to the session termination
+	 */
 	private void killSession() {
 		this.currentState = Event.GOODBYE.dispatch(currentState);
 		this.currentMessage = this.currentState.getMessage(this.name, (System.currentTimeMillis() - this.initialTime));
 
 	}
 
+	/**
+	 * Updates the last active time to the current time. Method should be called
+	 * whenever the client interacts with the server in the current session
+	 */
 	private void updateLastActiveTime() {
 		this.lastActiveTime = System.currentTimeMillis();
 	}
 
-	public String getUuid() {
-		return this.uuid.toString();
-	}
-
+	/**
+	 * Get the welcome message to be sent to the client as initial greeting
+	 * 
+	 * @return
+	 */
 	public String getHiMessage() {
 		if (State.WAITING_TO_START.equals(this.currentState)) {
 			this.updateLastActiveTime();
 			return this.currentState.getMessage(this.uuid);
 		}
+		LOGGER.error("Can't get a hello message if not in initial state");
 		throw new IllegalStateException("Can't get a hello message if not in initial state");
 	}
 
+	/**
+	 * Method containing all the parsing for the input send by the user. Uses
+	 * regular expressions to extract information based on the expected
+	 * structure of messages established in the communication protocol.
+	 * 
+	 * Messages are processed according to the session state managed with the
+	 * {@link State} and {@link Event} enumerations. An {@link Event} is
+	 * dispatched every time an input is received from the client. These Events
+	 * lead to the session to be in the corresponding {@link State} according to
+	 * the input processing.
+	 * 
+	 * @param input
+	 */
 	public void processInput(String input) {
 		this.updateLastActiveTime();
 		Boolean recognizedInput = false;
 
 		if (BYE_PATTERN.matcher(input).matches()) {
+			LOGGER.info("Processing Goodbye Request");
 			recognizedInput = true;
 			this.killSession();
 		} else {
@@ -117,8 +150,12 @@ public class Session {
 			case ITEM_REMOVED:
 			case VALUE_COMPUTED:
 			case GREETED:
+				// TODO: Check if matching checks can be re-written in a more
+				// elegant way. Check if a commander would be a good idea to be
+				// implemented here
 				matcher = ADD_NODE_PATTERN.matcher(input);
 				if (matcher.matches()) {
+					LOGGER.info("Processing Add Node Request");
 					recognizedInput = true;
 					String nodeName = matcher.group(1);
 					Boolean successful = graph.addNode(nodeName);
@@ -126,6 +163,7 @@ public class Session {
 					this.currentMessage = this.currentState.getMessage("NODE");
 				} else {
 					matcher = REMOVE_NODE_PATTERN.matcher(input);
+					LOGGER.info("Processing Node Removal Request");
 					if (matcher.matches()) {
 						recognizedInput = true;
 						String nodeName = matcher.group(1);
@@ -134,6 +172,7 @@ public class Session {
 						this.currentMessage = this.currentState.getMessage("NODE");
 					} else {
 						matcher = ADD_EDGE_PATTERN.matcher(input);
+						LOGGER.info("Processing Add Edge Request");
 						if (matcher.matches()) {
 							recognizedInput = true;
 							String originNode = matcher.group(1);
@@ -147,6 +186,7 @@ public class Session {
 								this.currentMessage = this.currentState.getMessage("NODE");
 							}
 						} else {
+							LOGGER.info("Processing Edge Removal Request");
 							matcher = REMOVE_EDGE_PATTERN.matcher(input);
 							if (matcher.matches()) {
 								recognizedInput = true;
@@ -161,6 +201,7 @@ public class Session {
 								}
 							} else {
 								matcher = SHORTEST_PATH_PATTERN.matcher(input);
+								LOGGER.info("Processing Shortest Path Request");
 								if (matcher.matches()) {
 									recognizedInput = true;
 									String originNode = matcher.group(1);
@@ -173,6 +214,7 @@ public class Session {
 										this.currentMessage = this.currentState.getMessage("NODE");
 									}
 								} else {
+									LOGGER.info("Processing Closer Than Request");
 									matcher = CLOSER_THAN_PATTERN.matcher(input);
 									if (matcher.matches()) {
 										recognizedInput = true;
@@ -195,6 +237,7 @@ public class Session {
 				}
 				break;
 			case WAITING_TO_START:
+				LOGGER.info("Processing Hello Request");
 				matcher = HI_PATTERN.matcher(input);
 				if (matcher.matches()) {
 					recognizedInput = true;
@@ -208,9 +251,12 @@ public class Session {
 			}
 		}
 		if (!recognizedInput) {
+			LOGGER.warn("Given option " + input + " was not recognized");
 			this.currentMessage = "SORRY, I DIDN'T UNDERSTAND THAT";
 		}
 	}
+
+	// --- GETTERS AND SETTERS ---
 
 	public State getCurrentState() {
 		return this.currentState;
@@ -218,6 +264,10 @@ public class Session {
 
 	public String getCurrentMessage() {
 		return this.currentMessage;
+	}
+
+	public String getUuid() {
+		return this.uuid.toString();
 	}
 
 }

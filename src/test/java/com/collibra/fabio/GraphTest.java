@@ -2,7 +2,6 @@ package com.collibra.fabio;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentMap;
 
@@ -11,6 +10,12 @@ import org.junit.Test;
 import com.collibra.fabio.graph.Graph;
 import com.collibra.fabio.graph.Node;
 
+/**
+ * Test class used to quickly check some functionalities of the {@link Graph}.
+ * 
+ * @author fabio
+ *
+ */
 public class GraphTest {
 
 	@Test
@@ -51,18 +56,20 @@ public class GraphTest {
 
 		System.out.println(adjacencyMatrixToString(graph.getAdjacencyMatrix()));
 
+		System.out.println(graph.closerThan(34, "1"));
+
 		assertEquals(8, graph.getNodes().size());
 	}
 
 	/**
 	 * Test method intended to be used only with nodes named with sequential
-	 * integers starting from 0
+	 * integers starting from 0 (For instance graphs loaded from test resources
+	 * files)
 	 * 
 	 * @return
 	 */
 	public String adjacencyMatrixToString(ConcurrentMap<Node, ConcurrentMap<Node, Integer>> matrix) {
 		int[][] result = new int[matrix.keySet().size()][matrix.keySet().size()];
-//		Arrays.fill(result, 0);
 		for (Entry<Node, ConcurrentMap<Node, Integer>> e : matrix.entrySet()) {
 			for (Entry<Node, Integer> ee : e.getValue().entrySet()) {
 				result[Integer.valueOf(e.getKey().getName())][Integer.valueOf(ee.getKey().getName())] = ee.getValue();
